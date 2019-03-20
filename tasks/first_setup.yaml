@@ -1,0 +1,65 @@
+---
+
+import_tasks: first_setup_validator.yaml
+
+- name: Configure hostname - Primary Device
+  bigip_hostname:
+    hostname:  "{{ bigip_ha_cluster_hostname }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+
+- name: Set CMI device parameters - Primary Device
+  bigip_device_connectivity:
+    config_sync_ip: "{{ bigip_ha_cluster_config_sync_ip }}"
+    mirror_primary_address: "{{ bigip_ha_cluster_mirror_primary_address | default(omit) }}"
+    mirror_secondary_address: "{{ bigip_ha_cluster_mirror_secondary_address | default(omit) }}"
+    unicast_failover: "{{ bigip_ha_cluster_unicast_failover }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+
+- name: Set Connection Facts - Peer Device
+  set_fact:
+    provider:
+      server: "{{ bigip_ha_cluster_peer_server }}"
+      server_port: "{{ bigip_ha_cluster_peer_server_port | default(443) }}"
+      user: "{{ bigip_ha_cluster_peer_user | default(admin) }}"
+      password: "{{ bigip_ha_cluster_peer_password | default(admin) }}"
+      validate_certs: "{{ bigip_ha_cluster_peer_validate_certs | default(no) }}"
+      transport: rest
+
+- name: Wait for BIG-IP to be available - Peer Device
+  bigip_wait:
+    timeout: 300
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  register: status
+  until: status is success
+  retries: 10
+  delay: 6
+
+- name: Configure hostname - Peer Device
+  bigip_hostname:
+    hostname:  "{{ bigip_ha_cluster_peer_hostname }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+
+- name: Set CMI device parameters - Peer Device
+  bigip_device_connectivity:
+    config_sync_ip: "{{ bigip_ha_cluster_peer_config_sync_ip }}"
+    mirror_primary_address: "{{ bigip_ha_cluster_peer_mirror_primary_address | default(omit) }}"
+    mirror_secondary_address: "{{ bigip_ha_cluster_peer_mirror_secondary_address | default(omit) }}"
+    unicast_failover: "{{ bigip_ha_cluster_peer_unicast_failover }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+
+- name: Set Connection Facts - Revert to Primary Device
+  set_fact:
+    provider:
+      server: "{{ bigip_ha_cluster_server }}"
+      server_port: "{{ bigip_ha_cluster_server_port }}"
+      user: "{{ bigip_ha_cluster_user }}"
+      password: "{{ bigip_ha_cluster_password }}"
+      validate_certs: "{{ bigip_ha_cluster_validate_certs | default(no) }}"
+      transport: rest
+
+- import_tasks: configure.yaml

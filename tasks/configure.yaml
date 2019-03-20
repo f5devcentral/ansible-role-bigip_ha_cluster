@@ -1,0 +1,43 @@
+---
+
+- name: Setup Trust with Peer Device
+    bigip_device_trust:
+      peer_server: "{{ bigip_ha_cluster_peer_server }}"
+      peer_hostname: "{{ bigip_ha_cluster_peer_server_port }}"
+      peer_user: "{{ bigip_ha_cluster_peer_user }}"
+      peer_password: "{{ bigip_ha_cluster_peer_password }}"
+      provider: "{{ provider }}"
+    delegate_to: localhost
+
+- name: Add Device Group
+    bigip_device_group:
+      name: "{{ bigip_ha_cluster_device_group }}"
+      auto_sync: "{{ bigip_ha_cluster_auto_sync | default(omit) }}"
+      type: sync-failover
+      provider: "{{ provider }}"
+    delegate_to: localhost
+
+- name: Add members to Device Group
+    bigip_device_group_member:
+      device_group: "{{ bigip_ha_cluster_device_group }}"
+      name: "{{ item }}"
+      provider: "{{ provider }}"
+    with_items:
+      - "{{ bigip_ha_cluster_hostname  }}"
+      - "{{ bigip_ha_cluster_peer_hostname }}"
+    delegate_to: localhost
+
+- name: Perform First Config Sync to Group
+    bigip_configsync_action:
+      device_group: "{{ bigip_ha_cluster_device_group }}"
+      sync_device_to_group: "{{ bigip_ha_cluster_sync_to_group }}"
+      provider: "{{ provider }}"
+    when:
+      - bigip_ha_cluster_sync_to_group is defined
+      - bigip_ha_cluster_sync_to_group == true
+
+- import_tasks: traffic_group_setup.yaml
+    when:
+      - bigip_ha_cluster_traffic_group is defined
+
+

@@ -1,0 +1,31 @@
+---
+
+- name: Validate bigip_ha_cluster_config_sync_ip present
+  fail:
+    msg: "The bigip_ha_cluster_config_sync_ip parameter is not defined."
+  when:
+    - bigip_ha_cluster_config_sync_ip is not defined
+
+- name: Validate bigip_ha_cluster_unicast_failover present
+  fail:
+    msg: "The bigip_ha_cluster_unicast_failover parameter is not defined."
+  when:
+    - bigip_ha_cluster_unicast_failover is not defined
+
+- name: Validate bigip_ha_cluster_peer_config_sync_ip present
+  fail:
+    msg: "The bigip_ha_cluster_peer_config_sync_ip parameter is not defined."
+  when:
+    - bigip_ha_cluster_peer_config_sync_ip is not defined
+
+- name: Validate bigip_ha_cluster_peer_unicast_failover present
+  fail:
+    msg: "The bigip_ha_cluster_peer_unicast_failover parameter is not defined."
+  when:
+    - bigip_ha_cluster_peer_unicast_failover is not defined
+
+- name: Validate bigip_ha_cluster_peer_server present
+  fail:
+    msg: "The bigip_ha_cluster_peer_server parameter is not defined."
+  when:
+    - bigip_ha_cluster_peer_server is not defined

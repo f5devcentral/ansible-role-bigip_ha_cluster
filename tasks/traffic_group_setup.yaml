@@ -1,0 +1,38 @@
+---
+
+- name: Validate mutually exclusive attributes are not present
+  fail:
+    msg: "The bigip_ha_cluster_ha_order and bigip_ha_cluster_ha_group parameter cannot be specified together."
+  when:
+    - bigip_ha_cluster_ha_order is defined and bigip_ha_cluster_ha_group is defined
+
+- name: Setup a Traffic Group with HA order
+  bigip_device_traffic_group:
+    name: "{{ bigip_ha_cluster_traffic_group }}"
+    ha_order: "{{ bigip_ha_cluster_ha_order }}"
+    auto_failback: "{{ bigip_ha_cluster_auto_failback | default(omit) }}"
+    auto_failback_time: "{{ bigip_ha_cluster_auto_failback_time| default(omit) }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  when:
+    - bigip_ha_cluster_ha_order is defined
+
+- name: Setup a Traffic Group with HA group
+  bigip_device_traffic_group:
+    name: "{{ bigip_ha_cluster_traffic_group }}"
+    ha_group: "{{ bigip_ha_cluster_ha_group }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  when:
+    - bigip_ha_cluster_ha_group is defined
+
+- name: Setup a Traffic Group with HA order
+  bigip_device_traffic_group:
+    name: "{{ bigip_ha_cluster_traffic_group }}"
+    ha_load_factor: "{{ bigip_ha_cluster_ha_load_factor }}"
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  when:
+    - bigip_ha_cluster_ha_order is not defined
+    - bigip_ha_cluster_ha_group is not defined
+    - ha_load_factor is defined

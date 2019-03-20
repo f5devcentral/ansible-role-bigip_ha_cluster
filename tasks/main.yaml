@@ -1,0 +1,41 @@
+---
+
+- name: Set Connection Facts
+  set_fact:
+    provider:
+      server: "{{ bigip_ha_cluster_server }}"
+      server_port: "{{ bigip_ha_cluster_server_port }}"
+      user: "{{ bigip_ha_cluster_user }}"
+      password: "{{ bigip_ha_cluster_password }}"
+      validate_certs: "{{ bigip_ha_cluster_validate_certs | default(no)  }}"
+      transport: rest
+
+- name: Wait for BIG-IP to be available
+  bigip_wait:
+    timeout: 300
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  register: status
+  until: status is success
+  retries: 10
+  delay: 6
+
+- import_tasks: parameter_validator.yaml
+  when:
+    - bigip_ha_cluster_state == present
+
+- import_tasks: first_setup.yaml
+  when:
+    - bigip_ha_cluster_state == present
+    - bigip_ha_cluster_first_setup == true
+
+- import_tasks: configure.yaml
+  when:
+    - bigip_ha_cluster_state == present
+    - bigip_ha_cluster_first_setup != true
+
+- import_task: remove.yaml
+  when:
+    - bigip_ha_cluster_state == absent
+
+
