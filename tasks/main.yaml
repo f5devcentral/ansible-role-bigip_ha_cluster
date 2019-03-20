@@ -21,8 +21,6 @@
   delay: 6
 
 - import_tasks: parameter_validator.yaml
-  when:
-    - bigip_ha_cluster_state == present
 
 - import_tasks: first_setup.yaml
   when:

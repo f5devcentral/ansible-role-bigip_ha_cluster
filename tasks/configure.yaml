@@ -1,5 +1,11 @@
 ---
 
+- name: Validate bigip_ha_cluster_peer_server present
+  fail:
+    msg: "The bigip_ha_cluster_peer_server parameter is not defined."
+  when:
+    - bigip_ha_cluster_peer_server is not defined
+
 - name: Setup Trust with Peer Device
     bigip_device_trust:
       peer_server: "{{ bigip_ha_cluster_peer_server }}"

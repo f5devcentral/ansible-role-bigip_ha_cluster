@@ -1,1 +1,28 @@
 ---
+
+- name: Remove non-default Traffic Group
+  bigip_device_traffic_group:
+    name: "{{ bigip_ha_cluster_traffic_group }}"
+    state: absent
+  delegate_to: localhost
+  when:
+    - bigip_ha_cluster_traffic_group is defined
+    - bigip_ha_cluster_traffic_group != "traffic-group-1"
+
+- name: Remove members from the Device Group
+  bigip_device_group_member:
+    device_group: "{{ bigip_ha_cluster_device_group }}"
+    name: "{{ item }}"
+    state: absent
+    provider: "{{ provider }}"
+  delegate_to: localhost
+  with_items:
+    - "{{ bigip_ha_cluster_hostname  }}"
+    - "{{ bigip_ha_cluster_peer_hostname }}"
+
+- name: Remove device group
+  bigip_device_group:
+    name: "{{ dg_name }}"
+    state: absent
+    provider: "{{ provider }}"
+  delegate_to: localhost

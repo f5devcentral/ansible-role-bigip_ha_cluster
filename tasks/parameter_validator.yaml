@@ -1,11 +1,5 @@
 ---
 
-- name: Validate bigip_ha_cluster_peer_server present
-  fail:
-    msg: "The bigip_ha_cluster_peer_server parameter is not defined."
-  when:
-    - bigip_ha_cluster_peer_server is not defined
-
 - name: Validate bigip_ha_cluster_hostname and bigip_ha_cluster_peer_hostname present
   fail:
     msg: "The hostname parameters for the HA are not defined."
