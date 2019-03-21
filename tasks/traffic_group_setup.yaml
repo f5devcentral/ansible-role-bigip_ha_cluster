@@ -35,4 +35,4 @@
   when:
     - bigip_ha_cluster_ha_order is not defined
     - bigip_ha_cluster_ha_group is not defined
-    - ha_load_factor is defined
+    - bigip_ha_cluster_ha_load_factor is defined

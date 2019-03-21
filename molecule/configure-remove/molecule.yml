@@ -1,0 +1,51 @@
+---
+
+dependency:
+  name: galaxy
+  options:
+    role-file: molecule/resources/requirements.yml
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-file: molecule/resources/yaml-lint.yml
+platforms:
+  - name: instance-1
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
+    command: ${MOLECULE_DOCKER_COMMAND:-"sleep infinity"}
+    pre_build_image: true
+    groups:
+      - common
+      - configure
+      - remove
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      retry_files_enabled: false
+      host_key_checking: false
+  inventory:
+    group_vars:
+      common:
+        bigip_ha_cluster_server: ${F5_DEVICE_HOST:-localhost}
+        bigip_ha_cluster_server_port: ${F5_DEVICE_PORT:-443}
+        bigip_ha_cluster_user: ${F5_DEVICE_USER:-admin}
+        bigip_ha_cluster_password: ${F5_DEVICE_PASSWORD:-pass}
+        bigip_ha_cluster_validate_certs: ${F5_VALIDATE_CERT:-false}
+      configure:
+        bigip_ha_cluster_state: present
+      remove:
+        bigip_ha_cluster_state: absent
+  env:
+    ANSIBLE_ROLES_PATH: ../../../
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+scenario:
+  name: configure-remove
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

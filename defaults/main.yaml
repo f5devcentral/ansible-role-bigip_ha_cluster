@@ -1,0 +1,15 @@
+---
+### Connection parameters
+bigip_ha_cluster_server: localhost
+bigip_ha_cluster_server_port: 443
+bigip_ha_cluster_user: admin
+bigip_ha_cluster_password: secret
+bigip_ha_cluster_validate_certs: false
+
+bigip_ha_cluster_peer_server: localhost
+bigip_ha_cluster_peer_server_port: 443
+bigip_ha_cluster_peer_user: admin
+bigip_ha_cluster_peer_password: secret
+bigip_ha_cluster_peer_validate_certs: false
+
+bigip_ha_cluster_state: present

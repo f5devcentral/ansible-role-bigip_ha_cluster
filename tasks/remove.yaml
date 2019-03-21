@@ -22,7 +22,7 @@
 
 - name: Remove device group
   bigip_device_group:
-    name: "{{ dg_name }}"
+    name: "{{ bigip_ha_cluster_device_group }}"
     state: absent
     provider: "{{ provider }}"
   delegate_to: localhost

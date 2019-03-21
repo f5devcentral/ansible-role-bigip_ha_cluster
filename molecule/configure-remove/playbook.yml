@@ -1,0 +1,41 @@
+---
+
+- name: Configure HA and teardown HA
+  hosts: all
+  roles:
+    - role: f5devcentral.bigip_ha_cluster
+
+- name: Configure HA and Traffic Group
+  hosts: configure
+  any_errors_fatal: true
+
+  tasks:
+    - name: Configure HA group, setup TG HA order, preform first sync
+      include_role:
+        name: ansible-role-bigip_ha_cluster
+      vars:
+        bigip_ha_cluster_sync_to_group: true
+        bigip_ha_cluster_device_group: "test_dg_failover"
+        bigip_ha_cluster_traffic_group: "test_tg"
+        bigip_ha_cluster_hostname: "bigip1.local"
+        bigip_ha_cluster_peer_hostname: "bigip2.local"
+        bigip_ha_cluster_ha_order:
+        - "{{ bigip_ha_cluster_hostname }}"
+        - "{{ bigip_ha_cluster_peer_hostname }}"
+
+
+- name: Teardown HA and Traffic Group
+  hosts: remove
+  any_errors_fatal: true
+
+  tasks:
+    - name: Remove HA group and Traffic group
+      include_role:
+        name: ansible-role-bigip_ha_cluster
+      vars:
+        bigip_ha_cluster_device_group: "test_dg_failover"
+        bigip_ha_cluster_traffic_group: "test_tg"
+        bigip_ha_cluster_hostname: "bigip1.local"
+        bigip_ha_cluster_peer_hostname: "bigip2.local"
+
+

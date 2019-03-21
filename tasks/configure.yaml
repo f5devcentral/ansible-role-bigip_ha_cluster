@@ -5,15 +5,18 @@
     msg: "The bigip_ha_cluster_peer_server parameter is not defined."
   when:
     - bigip_ha_cluster_peer_server is not defined
+    - bigip_ha_cluster_set_trust == true
 
 - name: Setup Trust with Peer Device
     bigip_device_trust:
       peer_server: "{{ bigip_ha_cluster_peer_server }}"
-      peer_hostname: "{{ bigip_ha_cluster_peer_server_port }}"
+      peer_hostname: "{{ bigip_ha_cluster_peer_hostname  }}"
       peer_user: "{{ bigip_ha_cluster_peer_user }}"
       peer_password: "{{ bigip_ha_cluster_peer_password }}"
       provider: "{{ provider }}"
     delegate_to: localhost
+    when:
+      - bigip_ha_cluster_set_trust == true
 
 - name: Add Device Group
     bigip_device_group:
@@ -29,7 +32,7 @@
       name: "{{ item }}"
       provider: "{{ provider }}"
     with_items:
-      - "{{ bigip_ha_cluster_hostname  }}"
+      - "{{ bigip_ha_cluster_hostname }}"
       - "{{ bigip_ha_cluster_peer_hostname }}"
     delegate_to: localhost
 
@@ -39,7 +42,6 @@
       sync_device_to_group: "{{ bigip_ha_cluster_sync_to_group }}"
       provider: "{{ provider }}"
     when:
-      - bigip_ha_cluster_sync_to_group is defined
       - bigip_ha_cluster_sync_to_group == true
 
 - import_tasks: traffic_group_setup.yaml
