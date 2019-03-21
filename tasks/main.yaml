@@ -20,20 +20,18 @@
   retries: 10
   delay: 6
 
-- import_tasks: parameter_validator.yaml
+- include_tasks: parameter_validator.yaml
 
-- import_tasks: first_setup.yaml
+- include_tasks: first_setup.yaml
   when:
     - bigip_ha_cluster_state == present
     - bigip_ha_cluster_first_setup == true
 
-- import_tasks: configure.yaml
+- include_tasks: configure.yaml
   when:
     - bigip_ha_cluster_state == present
     - bigip_ha_cluster_first_setup != true
 
-- import_task: remove.yaml
+- include_tasks: remove.yaml
   when:
     - bigip_ha_cluster_state == absent
-
-

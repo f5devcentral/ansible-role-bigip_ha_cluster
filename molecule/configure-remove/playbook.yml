@@ -20,8 +20,8 @@
         bigip_ha_cluster_hostname: "bigip1.local"
         bigip_ha_cluster_peer_hostname: "bigip2.local"
         bigip_ha_cluster_ha_order:
-        - "{{ bigip_ha_cluster_hostname }}"
-        - "{{ bigip_ha_cluster_peer_hostname }}"
+          - "{{ bigip_ha_cluster_hostname }}"
+          - "{{ bigip_ha_cluster_peer_hostname }}"
 
 
 - name: Teardown HA and Traffic Group
@@ -37,5 +37,3 @@
         bigip_ha_cluster_traffic_group: "test_tg"
         bigip_ha_cluster_hostname: "bigip1.local"
         bigip_ha_cluster_peer_hostname: "bigip2.local"
-
-
