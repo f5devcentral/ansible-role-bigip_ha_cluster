@@ -25,12 +25,12 @@
 - include_tasks: first_setup.yaml
   when:
     - bigip_ha_cluster_state == present
-    - bigip_ha_cluster_first_setup == true
+    - bigip_ha_cluster_first_setup
 
 - include_tasks: configure.yaml
   when:
     - bigip_ha_cluster_state == present
-    - bigip_ha_cluster_first_setup != true
+    - not bigip_ha_cluster_first_setup
 
 - include_tasks: remove.yaml
   when:
